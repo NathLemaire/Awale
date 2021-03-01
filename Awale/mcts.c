@@ -20,13 +20,16 @@ Node* choose_best_leaf(Node* current){
         wins = current->sons[i]->wins;
         played = current->sons[i]->played;
         father_played = current->played;
-        if(played) temp_value = wins/played + 5 * sqrt(played)/father_played;
-        else temp_value = 1000000000;
-        if (max_node < temp_value){
-            best = current->sons[i];
-            max_node = temp_value;
-        }
+        if(played){
+            temp_value = wins/played + 1.41 * sqrt(played)/father_played;
+            //printf("Wins : %f, Played: %f, Father %f, Value %f\n", wins, played, father_played, temp_value);
+            if (max_node < temp_value){
+                best = current->sons[i];
+                max_node = temp_value;
+            }
+        }else return current->sons[i];
     }
+    //printf("Best value %f\n", temp_value);
     return best;
 }
 
@@ -86,7 +89,7 @@ void expansion(Node* current){
         if(!current->sons) printf("Couldnt malloc");
         for(int i=0; i<taille; i++){
             current->sons[i] = clone(current);
-            play(current->sons[i]->game, tab[i], 1-who_plays(current->game));
+            play(current->sons[i]->game, tab[i], who_plays(current->game));
         }
         current->nb_sons = taille;
         w = rollout(current->sons[0]);
@@ -97,11 +100,12 @@ void expansion(Node* current){
 void back_tracking(Node* current, int value){
 	current->wins += value;
     current->played += 1;
-	if(current->father) back_tracking(current->father, value);
+	if(current->father) back_tracking(current->father, 1-value);
 }
 
 void print_nodes(Node* current, int profondeur){
     printf("Wins %ld, Played %ld, Nb_sons %d, Profondeur %d, Who_plays %d\n", current->wins, current->played, current->nb_sons, profondeur, who_plays(current->game));
+    print_score(current->game);
     print_board(current->game);
     //print_score(current->game);
     //printf("Sons\n");

@@ -31,9 +31,17 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="awale.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="awale.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="mcts.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="mcts.h" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

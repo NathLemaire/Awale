@@ -77,20 +77,23 @@ void play(long* a, int place, int player){
         value--;
     }
     add_score(a, compute_score(a, place, var, player), player);
-    set_who_plays(a, player);
+    set_who_plays(a, 1-player);
 }
 
 int get_available_moves(long* a, int player, int* tab){
     int taille=0;
     int has_to_feed = 1;
-    if (player) has_to_feed = !((a[0] & 0x3FFFFFFF) + (a[1] & 0x3F));
-    else has_to_feed = !((a[1] >> 6 & 0xFFFFFF) + (a[2] & 0xFFF));
+    int seeds0 = (a[0] & 0x3FFFFFFF) + (a[1] & 0x3F);
+    int seeds1 = (a[1] >> 6 & 0xFFFFFF) + (a[2] & 0xFFF);
+    if(seeds0 + seeds1 <= 5) return 0;
+    if (player) has_to_feed = !seeds0;
+    else has_to_feed = !seeds1;
     if(has_to_feed){
         for(int i=6*player; i<6*(1+player); i++){
             int v = get_value(a, i);
             if(v && i+v-6*(1+player)>=0){
-            tab[taille] = i;
-                    taille++;
+                tab[taille] = i;
+                taille++;
             }
         }
     }else{
@@ -120,7 +123,7 @@ int check_end(long* a){
     for(int i=0; i<12; i++){
         sum += get_value(a, i);
     }
-    if(sum <= 3){
+    if(sum <= 5){
         if(score_player0 < score_player1) return 2;
         else if(score_player0 > score_player1) return 3;
         else return 1;
@@ -186,10 +189,10 @@ int get_winner(long* a){
 }
 
 void set_who_plays(long* a, int player){
-    if(player) a[2] |= player << 26;
-    else a[2] &= ~(player << 26);
+    if(player) a[2] |= (player << 26);
+    else a[2] &= ~((1-player) << 26);
 }
 
 int who_plays(long* a){
-    return a[2] >> 26 & 0x1;
+    return (a[2] >> 26) & 0x1;
 }
