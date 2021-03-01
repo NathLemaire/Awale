@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "awale.h"
 
 void print_board(long* a){
     printf("%ld ", a[1] & 0x3F);
@@ -50,18 +51,18 @@ int compute_score(long* a, int place, int nb_graines, int player){
     if(mid < 0 || mid > 5) return 0;
     int value = get_value(a, place);
     if(1 < value && value < 4){
-	score += value;
+        score += value;
         set_place_zero(a, place);
         while(nb_graines-- > 0){
             if(!place--) place = 11;
             mid = place-6*(1-player);
             if(mid < 0 || mid > 5) continue;
-	    value = get_value(a, place);
+            value = get_value(a, place);
             if(1< value && value < 4){
-		score += value;
+                score += value;
                 set_place_zero(a, place);
             }
-        }   
+        }
     }
     return score;
 }
@@ -72,35 +73,40 @@ void play(long* a, int place, int player){
     set_place_zero(a, place);
     while(value > 0){
         if(++place == 12) place = 0;
-	increment(a, place);
+        increment(a, place);
         value--;
     }
-    add_score(a, compute_score(a, place, var, player), player); 
+    add_score(a, compute_score(a, place, var, player), player);
+    set_who_plays(a, player);
 }
 
-int get_random_move(long* a, int player){
+int get_available_moves(long* a, int player, int* tab){
     int taille=0;
-    int tab[6];
     int has_to_feed = 1;
     if (player) has_to_feed = !((a[0] & 0x3FFFFFFF) + (a[1] & 0x3F));
     else has_to_feed = !((a[1] >> 6 & 0xFFFFFF) + (a[2] & 0xFFF));
     if(has_to_feed){
         for(int i=6*player; i<6*(1+player); i++){
             int v = get_value(a, i);
-	    if(v && i+v-6*(1+player)>=0){
-		tab[taille] = i;
-                taille++;
-	    }
+            if(v && i+v-6*(1+player)>=0){
+            tab[taille] = i;
+                    taille++;
+            }
         }
     }else{
     	for(int i=6*player; i<6*(1+player); i++){
-            int v = get_value(a, i);
-            if(v){
+            if(get_value(a, i)){
                 tab[taille] = i;
                 taille++;
             }
         }
     }
+    return taille;
+}
+
+int get_random_move(long* a, int player){
+    int tab[6];
+    int taille = get_available_moves(a, player, tab);
     if(taille) return tab[rand() % taille];
     else return -1;
 }
@@ -119,12 +125,6 @@ int check_end(long* a){
         else if(score_player0 > score_player1) return 3;
         else return 1;
     }
-    /*
-    if(get_random_move(a, player) == -1){
-        if(score_player0 < score_player1) return 2;
-        else if(score_player0 > score_player1) return 3;
-        else return 1;
-    }*/
     return 0;
 }
 
@@ -139,10 +139,11 @@ int choose_winner_from_score(long* a){
 int finish_randomly(long* a, int player){
     int w = check_end(a);
     int nb = 0;
+    int m;
     while(!w){
-    	int m = get_random_move(a, player);
+    	m = get_random_move(a, player);
         if(m == -1){
-	    w = choose_winner_from_score(a);
+            w = choose_winner_from_score(a);
             break;
         }
         //printf("Next move %d, player %d\n", m, player);
@@ -150,11 +151,11 @@ int finish_randomly(long* a, int player){
         //print_board(a);
         //print_score(a);
         w = check_end(a);
-	if(w) break;
-	m = get_random_move(a, 1-player);
-	if(m == -1){
-	    w = choose_winner_from_score(a);
-	    break;
+        if(w) break;
+        m = get_random_move(a, 1-player);
+        if(m == -1){
+            w = choose_winner_from_score(a);
+            break;
         }
         //printf("Next move %d, player %d\n", m, 1-player);
         play(a, m, 1-player);
@@ -172,7 +173,7 @@ void set_winner(long* a, int winner){
 	    a[2] |= 0x1 << 24;
 	    break;
 	case 2:
-            a[2] |= 0x2 << 24;
+        a[2] |= 0x2 << 24;
 	    break;
 	case 3:
 	    a[2] |= 0x3 << 24;
@@ -184,37 +185,11 @@ int get_winner(long* a){
     return a[2] >> 24 & 0x3;
 }
 
-int main(void)
-{
-    clock_t begin = clock();
-    //long a = 0xC4104104;
-    //long b = 0xC4104104;
-    //long c = 0xFC000104;
-    //long d = 0xC1085200;
-    //long e = 0xC70010C4;
-    //long f = 0xFC000182;
+void set_who_plays(long* a, int player){
+    if(player) a[2] |= player << 26;
+    else a[2] &= ~(player << 26);
+}
 
-    srand(time(NULL));
-    long a = 0xC4104104;
-    long b = 0xC4104104;
-    long c = 0xFC000104;
-    for(int i=0; i<100000; i++){
-        a = 0xC4104104;
-        b = 0xC4104104;
-        c = 0xFC000104;
-        long tab[] = {a,b,c};
-        finish_randomly(tab, 1);
-    } 
-    //long tab[] = {a,b,c};
-    //long tab2[] = {d, e, f};
-
-    /*
-    print_board(tab);    
-    int w = finish_randomly(tab, 1);
-    set_winner(tab, w);*/
-    //printf("Winner %d\n\n", get_winner(tab)); 
-    clock_t end = clock();
-    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("%f", time_spent);
-    return 0; 
+int who_plays(long* a){
+    return a[2] >> 26 & 0x1;
 }
