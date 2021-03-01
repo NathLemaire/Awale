@@ -9,7 +9,7 @@ int main()
 {
     int iter = 0;
     Node root = {NULL, NULL, NULL, 0, 0, 0};
-    //int he = 0;
+    int he = 0;
     clock_t begin = clock();
     long a = 0xC4104104;
     long b = 0xC4104104;
@@ -17,7 +17,7 @@ int main()
     long tab[] = {a,b,c};
     root.game = tab;
     srand(time(NULL));
-    while((clock() - begin) / CLOCKS_PER_SEC < 10){
+    while((clock() - begin) / CLOCKS_PER_SEC < 2){
         Node* chosen = selection(&root);
         expansion(chosen);
         //printf("Iter %d\n", iter);

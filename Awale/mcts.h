@@ -7,7 +7,7 @@ struct Node
     Node* father;
     Node** sons;
     long* game;
-    long wins;
+    long score;
     long played;
     int nb_sons;
 
