@@ -50,6 +50,7 @@ int compute_score(long* a, int place, int nb_graines, int player){
     int score = 0;
     if(mid < 0 || mid > 5) return 0;
     int value = get_value(a, place);
+    //printf("player %d, place %d, nb_graines %d, value %d\n", player, place, nb_graines, value);
     if(1 < value && value < 4){
         score += value;
         set_place_zero(a, place);

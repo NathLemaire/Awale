@@ -21,15 +21,22 @@ Node* choose_best_leaf(Node* current){
         played = current->sons[i]->played;
         father_played = current->played;
         if(played){
-            temp_value = score/played + 1.41 * sqrt(played)/father_played;
+            temp_value = score/played + 1.41 * sqrt(log(father_played)/played);
             //printf("Score : %f, Played: %f, Father %f, Value %f\n", score, played, father_played, temp_value);
             if (max_node < temp_value){
                 best = current->sons[i];
                 max_node = temp_value;
             }
-        }else return current->sons[i];
+        }else{
+            max_node = 50000;
+            //printf("Heere\n");
+            best = current->sons[i];
+            break;
+        }
     }
-    //printf("Best value %f\n", temp_value);
+    //printf("Best value %f\n", max_node);
+    //int j=0;
+    //scanf("%d", &j);
     return best;
 }
 
@@ -134,13 +141,24 @@ Node* find_successor(Node* current){
 }
 
 void print_nodes(Node* current, int profondeur){
-    if(current->played<1000) return;
+    //if(current->played<1000) return;
     if(profondeur > 1) return;
     profondeur++;
     for(int i=0; i<current->nb_sons; i++){
         print_nodes(current->sons[i], profondeur);
     }
-    printf("Score %ld, Played %ld, Nb_sons %d, Profondeur %d, Who_plays %d\n", current->score, current->played, current->nb_sons, profondeur, who_plays(current->game));
+    float max_node = 0;
+    float score;
+    float played;
+    float temp_value;
+    float father_played;
+    score = current->score;
+    played = current->played;
+    if(current->father) father_played = current->father->played;
+    else father_played = played;
+    if(played)
+        temp_value = score/played + 1.41 * sqrt(log(father_played)/played);
+    printf("Score %ld, Played %ld, Nb_sons %d, Profondeur %d, Who_plays %d, Score %f, father played %f\n", current->score, current->played, current->nb_sons, profondeur, who_plays(current->game), temp_value, father_played);
     //print_score(current->game);
     print_board(current->game);
     //print_score(current->game);
