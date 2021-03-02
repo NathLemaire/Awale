@@ -1,13 +1,13 @@
 # depslib dependency file v1.0
-1614638175 source:c:\users\nathl\desktop\ia\awale\awale\awale.c
+1614703312 source:c:\users\nathl\desktop\ia\awale\awale\awale.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
 	"awale.h"
 
-1614630465 c:\users\nathl\desktop\ia\awale\awale\awale.h
+1614702277 c:\users\nathl\desktop\ia\awale\awale\awale.h
 
-1614640088 source:c:\users\nathl\desktop\ia\awale\awale\mcts.c
+1614706193 source:c:\users\nathl\desktop\ia\awale\awale\mcts.c
 	<stdlib.h>
 	<stdio.h>
 	<math.h>
@@ -15,9 +15,9 @@
 	"mcts.h"
 	"awale.h"
 
-1614640436 c:\users\nathl\desktop\ia\awale\awale\mcts.h
+1614703704 c:\users\nathl\desktop\ia\awale\awale\mcts.h
 
-1614640369 source:c:\users\nathl\desktop\ia\awale\awale\main.c
+1614706122 source:c:\users\nathl\desktop\ia\awale\awale\main.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>

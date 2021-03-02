@@ -19,18 +19,18 @@ void print_board(long* a){
 }
 
 void print_score(long *a){
-    printf("Nord: %ld \n", a[2] >> 12 & 0x3F);
-    printf("Sud: %ld \n\n", a[2] >> 18 & 0x3F);
+    printf("Sud: %ld \n", a[2] >> 12 & 0x3F);
+    printf("Nord: %ld \n\n", a[2] >> 18 & 0x3F);
 }
 
 void add_score(long* a, int score, int player){
-    a[2] += score << (2+player)*6;
+    a[2] += score << (3-player)*6;
 }
 
 void increment(long* a, int place){
-    if(place < 5) a[0] += 1 << 6 * place;
-    else if(place < 10) a[1] += 1 << 6 * (place-5);
-    else a[2] += 1 << 6 * (place-10);
+    if(place < 5) a[0] += (1 << 6 * place);
+    else if(place < 10) a[1] += (1 << 6 * (place-5));
+    else a[2] += (1 << 6 * (place-10));
 }
 
 void set_place_zero(long* a, int place){
@@ -67,9 +67,10 @@ int compute_score(long* a, int place, int nb_graines, int player){
     return score;
 }
 
-void play(long* a, int place, int player){
+void play(long* a, int place){
     int value = get_value(a, place);
     int var = value;
+    int player = who_plays(a);
     set_place_zero(a, place);
     while(value > 0){
         if(++place == 12) place = 0;
@@ -80,7 +81,8 @@ void play(long* a, int place, int player){
     set_who_plays(a, 1-player);
 }
 
-int get_available_moves(long* a, int player, int* tab){
+int get_available_moves(long* a, int* tab){
+    int player = who_plays(a);
     int taille=0;
     int has_to_feed = 1;
     int seeds0 = (a[0] & 0x3FFFFFFF) + (a[1] & 0x3F);
@@ -107,23 +109,30 @@ int get_available_moves(long* a, int player, int* tab){
     return taille;
 }
 
-int get_random_move(long* a, int player){
+int get_random_move(long* a){
     int tab[6];
-    int taille = get_available_moves(a, player, tab);
+    int taille = get_available_moves(a, tab);
     if(taille) return tab[rand() % taille];
     else return -1;
 }
 
-int check_end(long* a){
-    int score_player0 = (a[2] >> 12 & 0x3F);
-    int score_player1 = (a[2] >> 18 & 0x3F);
+int is_terminal(long* a){
+    int score_player1 = (a[2] >> 12 & 0x3F);
+    int score_player0 = (a[2] >> 18 & 0x3F);
     if (score_player0 > 24) return 3;
     if (score_player1 > 24) return 2;
     int sum = 0;
     for(int i=0; i<12; i++){
         sum += get_value(a, i);
     }
-    if(sum <= 5){
+    if(sum <= 4){
+        if(score_player0 < score_player1) return 2;
+        else if(score_player0 > score_player1) return 3;
+        else return 1;
+    }
+    int tab[6];
+    int taille = get_available_moves(a, tab);
+    if(!taille){
         if(score_player0 < score_player1) return 2;
         else if(score_player0 > score_player1) return 3;
         else return 1;
@@ -131,40 +140,17 @@ int check_end(long* a){
     return 0;
 }
 
-int choose_winner_from_score(long* a){
-    int score_player0 = (a[2] >> 12 & 0x3F);
-    int score_player1 = (a[2] >> 18 & 0x3F);
-    if(score_player0 < score_player1) return 2;
-    else if(score_player0 > score_player1) return 3;
-    else return 1;
-}
-
-int finish_randomly(long* a, int player){
-    int w = check_end(a);
+int finish_randomly(long* a){
+    int w = is_terminal(a);
     int nb = 0;
-    int m;
     while(!w){
-    	m = get_random_move(a, player);
-        if(m == -1){
-            w = choose_winner_from_score(a);
-            break;
-        }
+    	int m = get_random_move(a);
         //printf("Next move %d, player %d\n", m, player);
-        play(a, m, player);
+        play(a, m);
         //print_board(a);
         //print_score(a);
-        w = check_end(a);
-        if(w) break;
-        m = get_random_move(a, 1-player);
-        if(m == -1){
-            w = choose_winner_from_score(a);
-            break;
-        }
-        //printf("Next move %d, player %d\n", m, 1-player);
-        play(a, m, 1-player);
-        //print_board(a);
-        //print_score(a);
-        nb += 2;
+        nb++;
+        w = is_terminal(a);
     }
     //printf("Iterations : %d\n", nb);
     return w;
@@ -182,6 +168,15 @@ void set_winner(long* a, int winner){
 	    a[2] |= 0x3 << 24;
 	    break;
     }
+}
+
+void build_board(long* a, long* b, long scoreS, long scoreN, long player){
+    long a_t = b[0] + (b[1] << 6) + (b[2] << 12) + (b[3] << 18) + (b[4] << 24);
+    long b_t = b[5] + (b[6] << 6) + (b[7] << 12) + (b[8] << 18) + (b[9] << 24);
+    long c_t = b[10] + (b[11] << 6)+ (scoreS << 12) + (scoreN << 18) + (player << 26);
+    a[0] = a_t;
+    a[1] = b_t;
+    a[2] = c_t;
 }
 
 int get_winner(long* a){

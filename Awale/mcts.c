@@ -12,17 +12,17 @@ int is_leaf(Node* n){
 Node* choose_best_leaf(Node* current){
     Node* best = NULL;
     float max_node = 0;
-    float wins;
+    float score;
     float played;
     float father_played;
     float temp_value;
     for(int i=0; i< current->nb_sons; i++){
-        wins = current->sons[i]->score;
+        score = current->sons[i]->score;
         played = current->sons[i]->played;
         father_played = current->played;
         if(played){
-            temp_value = wins/played + 2 * sqrt(played)/father_played;
-            //printf("Wins : %f, Played: %f, Father %f, Value %f\n", wins, played, father_played, temp_value);
+            temp_value = score/played + 1.41 * sqrt(played)/father_played;
+            //printf("Score : %f, Played: %f, Father %f, Value %f\n", score, played, father_played, temp_value);
             if (max_node < temp_value){
                 best = current->sons[i];
                 max_node = temp_value;
@@ -42,7 +42,7 @@ int rollout(Node* current){
     a[0] = current->game[0];
     a[1] = current->game[1];
     a[2] = current->game[2];
-    int c = finish_randomly(a, who_plays(a));
+    int c = finish_randomly(a);
     free(a);
     return c;
 }
@@ -72,7 +72,7 @@ Node* clone(Node* current){
 
 void expansion(Node* current){
     int w = 0;
-    if(!current->played){
+    if(!current->played || get_winner(current->game)){
         w = rollout(current);
         //Si Sud doit jouer alors 3 bien et 2 nul (Nord doit gagner)
         //Si Nord doit jouer alors 2 bien et 3 nul (Sud doit gagner)
@@ -84,7 +84,7 @@ void expansion(Node* current){
     }
     else{
         int tab[6];
-        int taille = get_available_moves(current->game, who_plays(current->game), tab);
+        int taille = get_available_moves(current->game, tab);
         if(!taille){
             w = rollout(current);
             set_winner(current->game, w);
@@ -100,7 +100,9 @@ void expansion(Node* current){
         if(!current->sons) printf("Couldnt malloc");
         for(int i=0; i<taille; i++){
             current->sons[i] = clone(current);
-            play(current->sons[i]->game, tab[i], who_plays(current->game));
+            play(current->sons[i]->game, tab[i]);
+            int w = is_terminal(current->sons[i]->game);
+            if(w) set_winner(current->sons[i]->game, w);
         }
         current->nb_sons = taille;
         w = rollout(current->sons[0]);
@@ -119,8 +121,21 @@ void back_tracking(Node* current, int value){
 	if(current->father) back_tracking(current->father, 2-value);
 }
 
+Node* find_successor(Node* current){
+    int max = -1;
+    Node* best = NULL;
+    for(int i = current->nb_sons; i--;){
+        if(max<current->sons[i]->played){
+            max = current->sons[i]->played;
+            best = current->sons[i];
+        }
+    }
+    return best;
+}
+
 void print_nodes(Node* current, int profondeur){
     if(current->played<1000) return;
+    if(profondeur > 1) return;
     profondeur++;
     for(int i=0; i<current->nb_sons; i++){
         print_nodes(current->sons[i], profondeur);

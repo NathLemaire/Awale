@@ -16,7 +16,7 @@ struct Node
 int is_leaf(Node* n);
 Node* choose_best_leaf(Node* current);
 int rollout(Node* current);
-void new_state(Node* father, int play, int rank);
+Node* find_successor(Node* current);
 Node* selection(Node* root);
 void expansion(Node* current);
 void back_tracking(Node* current, int value);
