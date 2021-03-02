@@ -9,37 +9,27 @@ int is_leaf(Node* n){
     return !(n->nb_sons);
 }
 
-void free_memory_sisters(Node* current){
-}
-
 Node* choose_best_leaf(Node* current){
     Node* best = NULL;
     float max_node = 0;
     float score;
     float played;
-    float father_played;
     float temp_value;
     for(int i=0; i< current->nb_sons; i++){
         score = current->sons[i]->score;
         played = current->sons[i]->played;
-        father_played = current->played;
         if(played){
-            temp_value = score/played + 1.41 * sqrt(log(father_played)/played);
-            //printf("Score : %f, Played: %f, Father %f, Value %f\n", score, played, father_played, temp_value);
+            temp_value = score/played + 2 * sqrt(log(current->played)/played);
             if (max_node < temp_value){
                 best = current->sons[i];
                 max_node = temp_value;
             }
         }else{
-            max_node = 50000;
-            //printf("Heere\n");
+            max_node = 10000000;
             best = current->sons[i];
             break;
         }
     }
-    //printf("Best value %f\n", max_node);
-    //int j=0;
-    //scanf("%d", &j);
     return best;
 }
 
@@ -48,7 +38,6 @@ int rollout(Node* current){
     int w = get_winner(current->game);
     if(w) return w;
     long* a = (long*) malloc(sizeof(long)*3);
-    if(!a) printf("Couldnt malloc");
     a[0] = current->game[0];
     a[1] = current->game[1];
     a[2] = current->game[2];
@@ -66,14 +55,11 @@ Node* selection(Node* root){
 
 Node* clone(Node* current){
     Node* new_son = (Node*) malloc(sizeof(Node));
-    if(!new_son) printf("Couldnt malloc");
     new_son->father = current;
-    long* a = (long*) malloc(sizeof(long)*3);
-    if(!a) printf("Couldnt malloc");
-    a[0] = current->game[0];
-    a[1] = current->game[1];
-    a[2] = current->game[2];
-    new_son->game = a;
+    new_son->game = (long*) malloc(sizeof(long)*3);
+    new_son->game[0] = current->game[0];
+    new_son->game[1] = current->game[1];
+    new_son->game[2] = current->game[2];
     new_son->score = 0;
     new_son->played = 0;
     new_son->nb_sons = 0;
@@ -84,8 +70,6 @@ void expansion(Node* current){
     int w = 0;
     if(!current->played || get_winner(current->game)){
         w = rollout(current);
-        //Si Sud doit jouer alors 3 bien et 2 nul (Nord doit gagner)
-        //Si Nord doit jouer alors 2 bien et 3 nul (Sud doit gagner)
         int p = who_plays(current->game);
         if(w == 2) back_tracking(current, 2-2*p);
         else if(w == 3) back_tracking(current, 2*p);
@@ -95,19 +79,7 @@ void expansion(Node* current){
     else{
         int tab[6];
         int taille = get_available_moves(current->game, tab);
-        if(!taille){
-            w = rollout(current);
-            set_winner(current->game, w);
-            //Si Sud doit jouer alors 3 bien et 2 nul
-            //Si Nord doit jouer alors 2 bien et 3 nul
-            int p = who_plays(current->game);
-            if(w == 2) back_tracking(current, 2-2*p);
-            else if(w == 3) back_tracking(current, 2*p);
-            else back_tracking(current, 1);
-            return;
-        }
         current->sons = (Node**) malloc(taille*sizeof(Node*));
-        if(!current->sons) printf("Couldnt malloc");
         for(int i=0; i<taille; i++){
             current->sons[i] = clone(current);
             play(current->sons[i]->game, tab[i]);
@@ -117,7 +89,6 @@ void expansion(Node* current){
         current->nb_sons = taille;
         w = rollout(current->sons[0]);
         int p = who_plays(current->game);
-        //Inverse puisque coup suivant
         if(w == 2) back_tracking(current->sons[0], 2*p);
         else if(w == 3) back_tracking(current->sons[0], 2-2*p);
         else back_tracking(current->sons[0], 1);
@@ -151,22 +122,16 @@ void print_nodes(Node* current, int profondeur){
     for(int i=0; i<current->nb_sons; i++){
         print_nodes(current->sons[i], profondeur);
     }
-    float score;
-    float played;
+    float score = current->score;
+    float played = current->played;
     float temp_value;
     float father_played;
-    score = current->score;
-    played = current->played;
     if(current->father) father_played = current->father->played;
     else father_played = played;
     if(played)
         temp_value = score/played + 1.41 * sqrt(log(father_played)/played);
     printf("Score %ld, Played %ld, Nb_sons %d, Profondeur %d, Who_plays %d, Score %f, father played %f\n", current->score, current->played, current->nb_sons, profondeur, who_plays(current->game), temp_value, father_played);
-    //print_score(current->game);
     print_board(current->game);
-    //print_score(current->game);
-    //printf("Sons\n");
-
 }
 
 void free_recursivly(Node* current){

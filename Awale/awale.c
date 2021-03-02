@@ -50,7 +50,6 @@ int compute_score(long* a, int place, int nb_graines, int player){
     int score = 0;
     if(mid < 0 || mid > 5) return 0;
     int value = get_value(a, place);
-    //printf("player %d, place %d, nb_graines %d, value %d\n", player, place, nb_graines, value);
     if(1 < value && value < 4){
         score += value;
         set_place_zero(a, place);
@@ -71,10 +70,12 @@ int compute_score(long* a, int place, int nb_graines, int player){
 void play(long* a, int place){
     int value = get_value(a, place);
     int var = value;
+    int begin = place;
     int player = who_plays(a);
     set_place_zero(a, place);
     while(value > 0){
         if(++place == 12) place = 0;
+        if(place == begin) continue;
         increment(a, place);
         value--;
     }
@@ -126,7 +127,7 @@ int is_terminal(long* a){
     for(int i=0; i<12; i++){
         sum += get_value(a, i);
     }
-    if(sum <= 4){
+    if(sum <= 5){
         if(score_player0 < score_player1) return 2;
         else if(score_player0 > score_player1) return 3;
         else return 1;
@@ -143,17 +144,11 @@ int is_terminal(long* a){
 
 int finish_randomly(long* a){
     int w = is_terminal(a);
-    int nb = 0;
     while(!w){
     	int m = get_random_move(a);
-        //printf("Next move %d, player %d\n", m, player);
         play(a, m);
-        //print_board(a);
-        //print_score(a);
-        nb++;
         w = is_terminal(a);
     }
-    //printf("Iterations : %d\n", nb);
     return w;
 }
 
