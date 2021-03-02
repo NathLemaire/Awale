@@ -9,6 +9,9 @@ int is_leaf(Node* n){
     return !(n->nb_sons);
 }
 
+void free_memory_sisters(Node* current){
+}
+
 Node* choose_best_leaf(Node* current){
     Node* best = NULL;
     float max_node = 0;
@@ -128,13 +131,14 @@ void back_tracking(Node* current, int value){
 	if(current->father) back_tracking(current->father, 2-value);
 }
 
-Node* find_successor(Node* current){
+Node* find_successor(Node* current, int* place){
     int max = -1;
     Node* best = NULL;
     for(int i = current->nb_sons; i--;){
         if(max<current->sons[i]->played){
             max = current->sons[i]->played;
             best = current->sons[i];
+            *place = i;
         }
     }
     return best;
@@ -147,7 +151,6 @@ void print_nodes(Node* current, int profondeur){
     for(int i=0; i<current->nb_sons; i++){
         print_nodes(current->sons[i], profondeur);
     }
-    float max_node = 0;
     float score;
     float played;
     float temp_value;
@@ -164,4 +167,56 @@ void print_nodes(Node* current, int profondeur){
     //print_score(current->game);
     //printf("Sons\n");
 
+}
+
+void free_recursivly(Node* current){
+    for(int i=0; i<current->nb_sons; i++){
+        free_recursivly(current->sons[i]);
+    }
+    free(current->game);
+    free(current->sons);
+    free(current);
+}
+
+void free_brother_father_node(Node* father, int place){
+    for(int i=0; i<father->nb_sons; i++){
+        if(i != place){
+            free_recursivly(father->sons[i]);
+        }
+    }
+    free(father->sons);
+    free(father->game);
+    free(father);
+}
+
+Node* proceed_mcts(Node* root, int iter){
+    printf("MCTS proceeding\n");
+    while(iter--){
+        Node* chosen = selection(root);
+        expansion(chosen);
+        //printf("Iter %d\n", iter);
+        //print_nodes(&root, 0);
+        //scanf("%d", &he);
+    }
+    //print_nodes(root, 0);
+    int place;
+    Node* next = find_successor(root, &place);
+    free_brother_father_node(root, place);
+    next->father = NULL;
+    print_board(next->game);
+    print_score(next->game);
+    return next;
+}
+
+Node* human_plays(Node* root, int play){
+    while(play >= root->nb_sons){
+        printf("Play incorrect, new play:");
+        scanf("%d", &play);
+    }
+    Node* n = root->sons[play];
+    free_brother_father_node(root, play);
+    print_board(n->game);
+    print_score(n->game);
+    n->father = NULL;
+    return n;
 }
