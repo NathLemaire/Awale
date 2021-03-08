@@ -119,7 +119,7 @@ void print_nodes(Node* current, int profondeur){
     //if(current->played<1000) return;
     //if(profondeur > 1) return;
     profondeur++;
-    printf("%d\n", profondeur);
+    //printf("%d\n", profondeur);
     for(int i=0; i<current->nb_sons; i++){
         print_nodes(current->sons[i], profondeur);
     }

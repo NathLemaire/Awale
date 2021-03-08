@@ -6,7 +6,7 @@
 
 int main()
 {
-    int iter = 200000;
+    int iter = 500000;
     int w = 0;
     Node f_node = {NULL, NULL, NULL, 0, 0, 0};
     Node* root = &f_node;
@@ -14,16 +14,14 @@ int main()
     long board[] = {4,4,4,4,4,4,4,4,4,4,4,4};
     build_board(tab, board, 0, 0, 1);
     root->game = tab;
-
     srand(time(NULL));
     //clock_t begin = clock();
-
     while(!w){
         root = proceed_mcts(root, iter);
-        print_nodes(root, 0);
+        //print_nodes(root, 0);
         w = is_terminal(root->game);
         if(w){
-            free_recursivly(root);
+            //free_recursivly(root);
             printf("Winner %d", w);
             return 0;
         }
