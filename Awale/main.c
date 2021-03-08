@@ -20,6 +20,7 @@ int main()
 
     while(!w){
         root = proceed_mcts(root, iter);
+        print_nodes(root, 0);
         w = is_terminal(root->game);
         if(w){
             free_recursivly(root);

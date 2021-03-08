@@ -7,7 +7,7 @@
 
 1614717240 c:\users\nathl\desktop\ia\awale\awale\awale.h
 
-1614723449 source:c:\users\nathl\desktop\ia\awale\awale\mcts.c
+1614724660 source:c:\users\nathl\desktop\ia\awale\awale\mcts.c
 	<stdlib.h>
 	<stdio.h>
 	<math.h>
@@ -17,12 +17,10 @@
 
 1614720529 c:\users\nathl\desktop\ia\awale\awale\mcts.h
 
-1614722106 source:c:\users\nathl\desktop\ia\awale\awale\main.c
+1614724555 source:c:\users\nathl\desktop\ia\awale\awale\main.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
 	"awale.h"
 	"mcts.h"
-	"windows.h"
-	"psapi.h"
 
