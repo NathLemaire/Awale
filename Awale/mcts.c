@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 #include "string.h"
 #include "mcts.h"
 #include "awale.h"
@@ -116,12 +117,14 @@ Node* find_successor(Node* current, int* place){
 }
 
 void print_nodes(Node* current, int profondeur){
-    if(current->played<10000) return;
-    //printf("%d\n", profondeur);
+    //if(current->played<1000) return;
+    //if(profondeur > 1) return;
     profondeur++;
+    //printf("%d\n", profondeur);
     for(int i=0; i<current->nb_sons; i++){
         print_nodes(current->sons[i], profondeur);
     }
+    /*
     float score = current->score;
     float played = current->played;
     float temp_value;
@@ -130,8 +133,8 @@ void print_nodes(Node* current, int profondeur){
     else father_played = played;
     if(played)
         temp_value = score/played + 1.41 * sqrt(log(father_played)/played);
-    printf("Score %ld, Played %ld, Nb_sons %d, Profondeur %d, Who_plays %d, Score %f, father played %f\n", current->score, current->played, current->nb_sons, profondeur, who_plays(current->game), temp_value, father_played);
-    print_board(current->game);
+    //if(profondeur > 50) printf("Score %ld, Played %ld, Nb_sons %d, Profondeur %d, Who_plays %d, Score %f, father played %f\n", current->score, current->played, current->nb_sons, profondeur, who_plays(current->game), temp_value, father_played);
+    print_board(current->game);*/
 }
 
 void free_recursivly(Node* current){
@@ -154,14 +157,28 @@ void free_brother_father_node(Node* father, int place){
     free(father);
 }
 
-Node* proceed_mcts(Node* root, int iter){
+Node* proceed_mcts(Node* root, int iter, int time_limit){
     printf("MCTS proceeding\n");
-    while(iter--){
-        Node* chosen = selection(root);
-        expansion(chosen);
-        //printf("Iter %d\n", iter);
-        //print_nodes(&root, 0);
-        //scanf("%d", &he);
+    int iterations = iter;
+    if(time_limit){
+	int nb_iter = 0;
+	clock_t begin = clock();
+        int segment = iter/100;
+        while((clock()-begin)/CLOCKS_PER_SEC < time_limit){ 
+            while(segment--){
+                Node* chosen = selection(root);
+                expansion(chosen);
+            }
+	    segment = iter/100;
+	    nb_iter++;
+        }
+	printf("Nb iterations : %d\n\n", nb_iter*segment);
+    }else{
+        while(iterations--){
+            Node* chosen = selection(root);
+            expansion(chosen);
+        }
+        printf("Nb iterations : %d\n\n", iter);
     }
     //print_nodes(root, 0);
     int place;

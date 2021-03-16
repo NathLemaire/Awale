@@ -23,7 +23,7 @@ void back_tracking(Node* current, int value);
 void print_nodes(Node* root, int profondeur);
 void free_recursivly(Node* current);
 void free_brother_father_node(Node* father, int place);
-Node* proceed_mcts(Node* root, int iter);
+Node* proceed_mcts(Node* root, int iter, int time_limit);
 Node* human_plays(Node* root, int play);
 
 

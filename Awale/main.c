@@ -6,7 +6,7 @@
 
 int main()
 {
-    int iter = 500000;
+    int iter = 10000;
     int w = 0;
     Node f_node = {NULL, NULL, NULL, 0, 0, 0};
     Node* root = &f_node;
@@ -15,9 +15,10 @@ int main()
     build_board(tab, board, 0, 0, 1);
     root->game = tab;
     srand(time(NULL));
+    int time_limit = 2;
     //clock_t begin = clock();
     while(!w){
-        root = proceed_mcts(root, iter);
+        root = proceed_mcts(root, iter, time_limit);
         //print_nodes(root, 0);
         w = is_terminal(root->game);
         if(w){
