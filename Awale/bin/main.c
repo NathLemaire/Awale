@@ -16,13 +16,13 @@ int main()
     root->game = tab;
     srand(time(NULL));
     int time_limit = 2;
-    //clock_t begin = clock();
+
     while(!w){
         root = proceed_mcts(root, iter, time_limit);
         //print_nodes(root, 0);
         w = is_terminal(root->game);
         if(w){
-            //free_recursivly(root);
+            free_recursivly(root);
             printf("Winner %d", w);
             return 0;
         }
@@ -34,6 +34,4 @@ int main()
     free_recursivly(root);
     printf("Winner %d", w);
     print_nodes(root, 0);
-    //clock_t end = clock();
-    //double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 }

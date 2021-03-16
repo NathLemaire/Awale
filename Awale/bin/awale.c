@@ -4,18 +4,20 @@
 #include "awale.h"
 
 void print_board(long* a){
-    printf("%ld ", a[1] & 0x3F);
-    printf("%ld ", a[0] >> 24 & 0x3F);
-    printf("%ld ", a[0] >> 18 & 0x3F);
-    printf("%ld ", a[0] >> 12 & 0x3F);
-    printf("%ld ", a[0] >> 6 & 0x3F);
-    printf("%ld \n", a[0] & 0x3F);
-    printf("%ld ", a[1] >> 6 & 0x3F);
-    printf("%ld ", a[1] >> 12 & 0x3F);
-    printf("%ld ", a[1] >> 18 & 0x3F);
-    printf("%ld ", a[1] >> 24 & 0x3F);
-    printf("%ld ", a[2] & 0x3F);
-    printf("%ld \n\n", a[2] >> 6 & 0x3F);
+    printf("  - - - - - - - - - - -\n");
+    printf("/ %ld ", a[1] & 0x3F);
+    printf("- %ld ", a[0] >> 24 & 0x3F);
+    printf("- %ld ", a[0] >> 18 & 0x3F);
+    printf("- %ld ", a[0] >> 12 & 0x3F);
+    printf("- %ld ", a[0] >> 6 & 0x3F);
+    printf("- %ld \\\n", a[0] & 0x3F);
+    printf("\\ %ld ", a[1] >> 6 & 0x3F);
+    printf("- %ld ", a[1] >> 12 & 0x3F);
+    printf("- %ld ", a[1] >> 18 & 0x3F);
+    printf("- %ld ", a[1] >> 24 & 0x3F);
+    printf("- %ld ", a[2] & 0x3F);
+    printf("- %ld /\n", a[2] >> 6 & 0x3F);
+    printf("  - - - - - - - - - - -\n\n");
 }
 
 void print_score(long *a){
