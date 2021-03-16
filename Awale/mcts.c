@@ -116,14 +116,12 @@ Node* find_successor(Node* current, int* place){
 }
 
 void print_nodes(Node* current, int profondeur){
-    //if(current->played<1000) return;
-    //if(profondeur > 1) return;
-    profondeur++;
+    if(current->played<10000) return;
     //printf("%d\n", profondeur);
+    profondeur++;
     for(int i=0; i<current->nb_sons; i++){
         print_nodes(current->sons[i], profondeur);
     }
-    /*
     float score = current->score;
     float played = current->played;
     float temp_value;
@@ -132,8 +130,8 @@ void print_nodes(Node* current, int profondeur){
     else father_played = played;
     if(played)
         temp_value = score/played + 1.41 * sqrt(log(father_played)/played);
-    //if(profondeur > 50) printf("Score %ld, Played %ld, Nb_sons %d, Profondeur %d, Who_plays %d, Score %f, father played %f\n", current->score, current->played, current->nb_sons, profondeur, who_plays(current->game), temp_value, father_played);
-    print_board(current->game);*/
+    printf("Score %ld, Played %ld, Nb_sons %d, Profondeur %d, Who_plays %d, Score %f, father played %f\n", current->score, current->played, current->nb_sons, profondeur, who_plays(current->game), temp_value, father_played);
+    print_board(current->game);
 }
 
 void free_recursivly(Node* current){

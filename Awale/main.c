@@ -25,8 +25,7 @@ int main()
             printf("Winner %d", w);
             return 0;
         }
-        int p = 0;
-        scanf("%d", &p);
+        int p = rand() % root->nb_sons;
         Node* chosen = human_plays(root, p);
         root = chosen;
         w = is_terminal(root->game);
