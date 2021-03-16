@@ -1,0 +1,1 @@
+gcc main.c mcts.c awale.c -O3 -o exe
