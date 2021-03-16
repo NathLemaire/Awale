@@ -183,7 +183,7 @@ Node* proceed_mcts(Node* root, int iter, int time_limit){
     //print_nodes(root, 0);
     int place;
     Node* next = find_successor(root, &place);
-    free_brother_father_node(root, place);
+    //free_brother_father_node(root, place);
     next->father = NULL;
     print_board(next->game);
     print_score(next->game);
@@ -196,7 +196,7 @@ Node* human_plays(Node* root, int play){
         scanf("%d", &play);
     }
     Node* n = root->sons[play];
-    free_brother_father_node(root, play);
+    //free_brother_father_node(root, play);
     print_board(n->game);
     print_score(n->game);
     n->father = NULL;
