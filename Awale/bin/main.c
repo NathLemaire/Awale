@@ -22,8 +22,7 @@ int main()
         //print_nodes(root, 0);
         w = is_terminal(root->game);
         if(w){
-            free_recursivly(root);
-            printf("Winner %d", w);
+            break;
             return 0;
         }
         int p = rand() % root->nb_sons;
@@ -32,6 +31,12 @@ int main()
         w = is_terminal(root->game);
     }
     free_recursivly(root);
-    printf("Winner %d", w);
+    if(w == 2){
+    	printf("Winner Sud\n");
+    }else if(w == 1){
+        printf("Partie Nulle\n");
+    }else{
+    	printf("Winner Nord\n");
+    }
     print_nodes(root, 0);
 }
