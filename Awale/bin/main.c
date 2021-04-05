@@ -16,7 +16,9 @@ int main()
     root->game = tab;
     srand(time(NULL));
     int time_limit = 2;
-
+    int random = 1;
+    printf("You play or random plays ? (0 or 1)");
+    scanf("%d", &random);
     while(!w){
         root = proceed_mcts(root, iter, time_limit);
         //print_nodes(root, 0);
@@ -25,7 +27,14 @@ int main()
             break;
             return 0;
         }
-        int p = rand() % root->nb_sons;
+        int p = 0;
+        if(random){
+            p = rand() % root->nb_sons;
+        }else{
+            p = 0;
+            printf("Which play ?");
+            scanf("%d", &p);
+        }
         Node* chosen = human_plays(root, p);
         root = chosen;
         w = is_terminal(root->game);
