@@ -18,7 +18,11 @@ int main()
     int time_limit = 2;
     int random = 1;
     printf("You play or random plays ? (0 or 1)");
-    scanf("%d", &random);
+    int b = scanf("%d", &random);
+    if(!b){
+        printf("Error in scan, exiting");
+        exit(-1);
+    }
     while(!w){
         root = proceed_mcts(root, iter, time_limit);
         //print_nodes(root, 0);
@@ -33,7 +37,11 @@ int main()
         }else{
             p = 0;
             printf("Which play ?");
-            scanf("%d", &p);
+            int a = scanf("%d", &p);
+            if(!a){
+                printf("Error in scan, exiting");
+                exit(-1);
+            }
         }
         Node* chosen = human_plays(root, p);
         root = chosen;

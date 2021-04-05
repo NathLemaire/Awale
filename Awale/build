@@ -1,0 +1,1 @@
+gcc ./bin/main.c ./bin/mcts.c ./bin/awale.c -Wall -Wextra -O3 -o awale.exe

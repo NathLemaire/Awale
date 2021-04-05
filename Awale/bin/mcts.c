@@ -182,7 +182,7 @@ Node* proceed_mcts(Node* root, int iter, int time_limit){
     //print_nodes(root, 0);
     int place = 0;
     Node* next = find_successor(root, &place);
-    free_brother_father_node(root, place);
+    //free_brother_father_node(root, place);
     next->father = NULL;
     print_board(next->game);
     print_score(next->game);
@@ -192,10 +192,14 @@ Node* proceed_mcts(Node* root, int iter, int time_limit){
 Node* human_plays(Node* root, int play){
     while(play >= root->nb_sons){
         printf("Play incorrect, you must input n^th available play from right to left ! New play:");
-        scanf("%d", &play);
+        int a = scanf("%d", &play);
+        if(!a){
+            printf("Error in scan, exiting");
+            exit(-1);
+        }
     }
     Node* n = root->sons[play];
-    free_brother_father_node(root, play);
+    //free_brother_father_node(root, play);
     print_board(n->game);
     print_score(n->game);
     n->father = NULL;

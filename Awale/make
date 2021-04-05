@@ -1,1 +1,0 @@
-gcc ./bin/main.c ./bin/mcts.c ./bin/awale.c -O3 -o exe
